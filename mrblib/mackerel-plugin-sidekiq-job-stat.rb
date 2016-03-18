@@ -10,10 +10,7 @@ def __main__(argv)
     prefix += "#{namespace}:" if namespace
 
     queues = r.smembers "#{prefix}queues"
-    res[:enqueued] = queues.map{|queue| "#{prefix}queue:#{queue}" }.map{|k| r.llen k }.inject(0){|s, v| s + v}
-    res[:retries] = r.zcard "#{prefix}retry"
-    res[:scheduled] = r.zcard "#{prefix}schedule"
-    res[:dead] = r.zcard "#{prefix}dead"
+    queues.map{|queue| res[queue] = r.llen("#{prefix}queue:#{queue}") }
 
     r.close
 
